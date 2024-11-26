@@ -15,8 +15,8 @@ body {
     height: 600px;
     overflow: hidden; /* Para ocultar contenido desbordante */
     background-color: #ffffff;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
 }
-
 
 .page {
     width: 100%;
@@ -24,4 +24,5 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: #ffffff;
 }

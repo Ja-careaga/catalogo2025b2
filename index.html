@@ -1,28 +1,23 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Catálogo Digital - Efecto de Paso de Página</title>
-<link rel="stylesheet" href="css/styles.css">
-<!-- Cargar jQuery desde CDN --> 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
-<!-- Cargar Turn.js desde CDN --> 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/4/turn.min.js"></script> 
-<!-- Cargar PDF.js desde CDN --> 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo Digital - Efecto de Paso de Página</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Cargar jQuery desde CDN -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Cargar Turn.js desde CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/4/turn.min.js"></script>
+    <!-- Cargar PDF.js desde CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
 </head>
 <body>
-<div id="catalog" class="catalog-container"> 
-  <!-- Aquí se cargarán las páginas dinámicamente --> 
-</div>
-<script>
-	if (typeof $.fn.turn === 'function') {
-    console.log("Turn.js cargado correctamente.");
-} else {
-    console.error("Turn.js no se cargó correctamente.");
-}
+    <div id="catalog" class="catalog-container">
+        <!-- Aquí se cargarán las páginas dinámicamente -->
+    </div>
 
+    <script>
         // Configuración de PDF.js
         const pdfUrl = 'PDF/CUEuniformes2024c.pdf';  // Cambia esto a la ruta de tu PDF
         const pdfjsLib = window['pdfjs-dist/build/pdf'];
@@ -32,60 +27,60 @@
         let catalog = $("#catalog");
 
         // Función para renderizar las páginas del PDF
-       async function renderPDF() {
-    try {
-        const pdfDoc = await pdfjsLib.getDocument(pdfUrl).promise;
-        const totalPages = pdfDoc.numPages;
-        console.log("Total de páginas en el PDF: ", totalPages);
+        async function renderPDF() {
+            try {
+                const pdfDoc = await pdfjsLib.getDocument(pdfUrl).promise;
+                const totalPages = pdfDoc.numPages;
+                console.log("Total de páginas en el PDF: ", totalPages);
 
-        for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
-            console.log("Cargando página: ", pageNum);
-            const page = await pdfDoc.getPage(pageNum);
-            const viewport = page.getViewport({ scale: 1.5 });
+                for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+                    console.log("Cargando página: ", pageNum);
+                    const page = await pdfDoc.getPage(pageNum);
+                    const viewport = page.getViewport({ scale: 1.5 });
 
-            // Crear un canvas para la página
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
+                    // Crear un canvas para la página
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
 
-            // Renderizar la página y esperar que termine
-            await page.render({ canvasContext: context, viewport: viewport }).promise;
+                    // Renderizar la página y esperar que termine
+                    await page.render({ canvasContext: context, viewport: viewport }).promise;
 
-            // Crear un div para cada página y agregarlo al catálogo
-            const pageDiv = $('<div class="page"></div>');
-            pageDiv.append(canvas);
-            catalog.append(pageDiv);
+                    // Crear un div para cada página y agregarlo al catálogo
+                    const pageDiv = $('<div class="page"></div>');
+                    pageDiv.append(canvas);
+                    catalog.append(pageDiv);
+                }
+
+                console.log("Aplicando efecto de paso de página");
+                // Intentar aplicar el efecto de paso de página
+                applyPageTurnEffect();
+            } catch (error) {
+                console.error("Error al cargar o renderizar el PDF: ", error);
+            }
         }
 
-        console.log("Aplicando efecto de paso de página");
-        // Intentar aplicar el efecto de paso de página
-        applyPageTurnEffect();
-    } catch (error) {
-        console.error("Error al cargar o renderizar el PDF: ", error);
-    }
-}
+        // Función separada para aplicar el efecto de paso de página
+        function applyPageTurnEffect() {
+            if (catalog.children().length > 0) {
+                catalog.turn({
+                    width: 800,
+                    height: 600,
+                    autoCenter: true,
+                    display: 'double',  // Mostrar páginas en pares
+                });
+                console.log("Efecto de paso de página aplicado exitosamente");
+            } else {
+                console.error("No se encontraron páginas en el catálogo para aplicar el efecto.");
+            }
+        }
 
-// Función separada para aplicar el efecto de paso de página
-function applyPageTurnEffect() {
-    if (catalog.children().length > 0) {
-        catalog.turn({
-            width: 800,
-            height: 600,
-            autoCenter: true
+        // Llamar a la función para renderizar el PDF
+        $(document).ready(function(){
+            renderPDF();
         });
-        console.log("Efecto de paso de página aplicado exitosamente");
-    } else {
-        console.error("No se encontraron páginas en el catálogo para aplicar el efecto.");
-    }
-}
-	
-	// Aplicar el efecto de paso de página con un pequeño retardo
-setTimeout(function() {
-    applyPageTurnEffect();
-}, 1000); // Retardo de 1 segundo
-
-
     </script>
 </body>
 </html>
+
