@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo Digital - Efecto de Paso de Página</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <!-- Cargar jQuery desde CDN -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <!-- Cargar Turn.js desde CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/4/turn.min.js"></script>
-    <!-- Cargar PDF.js desde CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catálogo Digital - Efecto de Paso de Página</title>
+<link rel="stylesheet" href="css/styles.css">
+<!-- Cargar jQuery desde CDN --> 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+<!-- Cargar Turn.js desde CDN --> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/4/turn.min.js"></script> 
+<!-- Cargar PDF.js desde CDN --> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
 </head>
 <body>
-    <div id="catalog" class="catalog-container"></div>
-
-    <script>
+<div id="catalog" class="catalog-container"> 
+  <!-- Aquí se cargarán las páginas dinámicamente --> 
+</div>
+<script>
         // Configuración de PDF.js
         const pdfUrl = 'PDF/CUEuniformes2024c.pdf';  // Cambia esto a la ruta de tu PDF
         const pdfjsLib = window['pdfjs-dist/build/pdf'];
@@ -25,37 +26,45 @@
         let catalog = $("#catalog");
 
         // Función para renderizar las páginas del PDF
-        async function renderPDF() {
-            const pdfDoc = await pdfjsLib.getDocument(pdfUrl).promise;
-            const totalPages = pdfDoc.numPages;
+       async function renderPDF() {
+    try {
+        const pdfDoc = await pdfjsLib.getDocument(pdfUrl).promise;
+        const totalPages = pdfDoc.numPages;
+        console.log("Total de páginas en el PDF: ", totalPages);
 
-            // Cargar cada página del PDF en el contenedor
-            for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
-                const page = await pdfDoc.getPage(pageNum);
-                const viewport = page.getViewport({ scale: 1.5 });
+        // Asegúrate de empezar en la página 1
+        for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+            console.log("Cargando página: ", pageNum);
+            const page = await pdfDoc.getPage(pageNum);
+            const viewport = page.getViewport({ scale: 1.5 });
 
-                // Crear un canvas para la página
-                const canvas = document.createElement('canvas');
-                const context = canvas.getContext('2d');
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
+            // Crear un canvas para la página
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
 
-                await page.render({ canvasContext: context, viewport: viewport }).promise;
+            // Renderizar la página y esperar que termine
+            await page.render({ canvasContext: context, viewport: viewport }).promise;
 
-                // Crear un div para cada página y agregarlo al catálogo
-                const pageDiv = $('<div class="page"></div>');
-                pageDiv.append(canvas);
-                catalog.append(pageDiv);
-            }
-
-            // Aplicar el efecto de paso de página una vez cargadas todas las páginas
-            catalog.turn({
-                width: viewport.width * 1.5,
-                height: viewport.height * 1.5,
-                autoCenter: true
-            });
+            // Crear un div para cada página y agregarlo al catálogo
+            const pageDiv = $('<div class="page"></div>');
+            pageDiv.append(canvas);
+            catalog.append(pageDiv);
         }
 
+        console.log("Aplicando efecto de paso de página");
+        // Aplicar el efecto de paso de página una vez cargadas todas las páginas
+        catalog.turn({
+            width: 800,
+            height: 600,
+            autoCenter: true
+        });
+        console.log("Efecto de paso de página aplicado exitosamente");
+    } catch (error) {
+        console.error("Error al cargar o renderizar el PDF: ", error);
+    }
+}
         // Llamar a la función para renderizar el PDF
         $(document).ready(function(){
             renderPDF();
