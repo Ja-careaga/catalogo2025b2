@@ -1,3 +1,6 @@
+@charset "utf-8";
+/* CSS Document */
+
 body {
     display: flex;
     justify-content: center;
@@ -8,6 +11,8 @@ body {
 }
 
 .catalog-container {
+    width: 800px;  /* Asegúrate de que coincida con el ancho especificado en catalog.turn */
+    height: 600px;  /* Asegúrate de que coincida con la altura especificada en catalog.turn */
     background-color: #ffffff;
     box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
     overflow: hidden;
