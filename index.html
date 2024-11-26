@@ -17,6 +17,12 @@
   <!-- Aquí se cargarán las páginas dinámicamente --> 
 </div>
 <script>
+	if (typeof $.fn.turn === 'function') {
+    console.log("Turn.js cargado correctamente.");
+} else {
+    console.error("Turn.js no se cargó correctamente.");
+}
+
         // Configuración de PDF.js
         const pdfUrl = 'PDF/CUEuniformes2024c.pdf';  // Cambia esto a la ruta de tu PDF
         const pdfjsLib = window['pdfjs-dist/build/pdf'];
@@ -32,7 +38,6 @@
         const totalPages = pdfDoc.numPages;
         console.log("Total de páginas en el PDF: ", totalPages);
 
-        // Asegúrate de empezar en la página 1
         for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
             console.log("Cargando página: ", pageNum);
             const page = await pdfDoc.getPage(pageNum);
@@ -54,21 +59,33 @@
         }
 
         console.log("Aplicando efecto de paso de página");
-        // Aplicar el efecto de paso de página una vez cargadas todas las páginas
+        // Intentar aplicar el efecto de paso de página
+        applyPageTurnEffect();
+    } catch (error) {
+        console.error("Error al cargar o renderizar el PDF: ", error);
+    }
+}
+
+// Función separada para aplicar el efecto de paso de página
+function applyPageTurnEffect() {
+    if (catalog.children().length > 0) {
         catalog.turn({
             width: 800,
             height: 600,
             autoCenter: true
         });
         console.log("Efecto de paso de página aplicado exitosamente");
-    } catch (error) {
-        console.error("Error al cargar o renderizar el PDF: ", error);
+    } else {
+        console.error("No se encontraron páginas en el catálogo para aplicar el efecto.");
     }
 }
-        // Llamar a la función para renderizar el PDF
-        $(document).ready(function(){
-            renderPDF();
-        });
+	
+	// Aplicar el efecto de paso de página con un pequeño retardo
+setTimeout(function() {
+    applyPageTurnEffect();
+}, 1000); // Retardo de 1 segundo
+
+
     </script>
 </body>
 </html>
